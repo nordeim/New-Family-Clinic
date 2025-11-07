@@ -1,0 +1,1 @@
+awesome job so far! please meticulously plan and create a comprehensive `Project_Architecture_Document.md` that is practical (in applying) and  detailed one with a file listing and hierarchy diagram with key files and their descriptions, a mermaid diagram of the application logic flow, a mermaid diagram of the user and modules interactions.
