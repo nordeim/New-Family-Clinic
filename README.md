@@ -281,21 +281,21 @@ sequenceDiagram
 <td>
 
 ### Frontend
-- **Framework**: [Next.js 13.5](https://nextjs.org/) (Pages Router)
-- **Language**: [TypeScript 5.2](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS 3.3](https://tailwindcss.com/)
+- **Framework**: [Next.js 15.5](https://nextjs.org/) (Pages Router)
+- **Language**: [TypeScript 5.8](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4.0](https://tailwindcss.com/)
 - **UI Library**: [Mantine 7.0](https://mantine.dev/)
-- **State**: [Zustand 4.4](https://zustand-demo.pmnd.rs/)
-- **Forms**: [React Hook Form 7.47](https://react-hook-form.com/)
+- **State**: [Zustand 4.5](https://zustand-demo.pmnd.rs/)
+- **Forms**: [React Hook Form 7.49](https://react-hook-form.com/)
 - **Validation**: [Zod 3.22](https://zod.dev/)
 
 </td>
 <td>
 
 ### Backend
-- **Runtime**: [Node.js 20 LTS](https://nodejs.org/)
-- **API**: [tRPC 10.43](https://trpc.io/)
-- **Database**: [PostgreSQL 15](https://www.postgresql.org/)
+- **Runtime**: [Node.js 22 LTS](https://nodejs.org/)
+- **API**: [tRPC 11.0](https://trpc.io/)
+- **Database**: [PostgreSQL 17](https://www.postgresql.org/)
 - **BaaS**: [Supabase](https://supabase.com/)
 - **Auth**: [Supabase Auth](https://supabase.com/docs/guides/auth)
 - **Storage**: [Supabase Storage](https://supabase.com/storage)
