@@ -1,0 +1,9 @@
+// components/ui/Button.tsx.example
+// Example of using an ARIA label for an icon-only button
+import { X } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+
+// In a Modal component:
+<Button variant="ghost" size="icon" aria-label="Close modal">
+  <X className="h-4 w-4" />
+</Button>
