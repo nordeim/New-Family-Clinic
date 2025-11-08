@@ -1,5 +1,11 @@
 sed -i 's/^-- database\//\/\/ database\//' oo1
 
+cp oo1 oo2
+sed -i 's/^\/\/ @\//\/\/ /' oo1
+diff oo1 oo2
+
+python3 extract_code_files.py oo1
+
 cd database/migrations && sed -i 's/^\/\/ database\//-- database\//' *sql
 
 cd database/seeds && sed -i 's/^\/\/ database\//-- database\//' *sql
