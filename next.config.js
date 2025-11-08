@@ -1,76 +1,76 @@
 // next.config.js
 
-/**
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
- * This is especially useful for Docker builds.
- */
 import "./src/env.js";
-
 import withBundleAnalyzer from "@next/bundle-analyzer";
 import withPWA from "next-pwa";
 
-// =================================================================
-// 1. BASE NEXT.JS CONFIGURATION
-// All core Next.js settings go here.
-// =================================================================
+const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' blob: data: *.supabase.co;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+`;
+
 /** @type {import('next').NextConfig} */
 const baseConfig = {
   reactStrictMode: true,
-  
-  // Image Optimization configuration
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "*.supabase.co", // Allows images from your Supabase storage bucket
-      },
-    ],
-    formats: ["image/avif", "image/webp"], // Serve modern, optimized image formats
+    remotePatterns: [{ protocol: "https", hostname: "*.supabase.co" }],
+    formats: ["image/avif", "image/webp"],
   },
-
-  // Enable Gzip compression for server-rendered pages and assets
   compress: true,
-
-  // Remove the "x-powered-by" header for security
   poweredByHeader: false,
+  // Add security headers
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: cspHeader.replace(/\s{2,}/g, ' ').trim(),
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
+  },
 };
 
-// =================================================================
-// 2. PWA PLUGIN CONFIGURATION
-// This wraps the base config to add PWA capabilities.
-// =================================================================
-const withPWAConfig = withPWA({
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+const pwaConfig = withPWA({
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === "development", // Disable PWA in dev for faster reloads
-  runtimeCaching: [
-    // Add your runtime caching strategies here if needed.
-    // Example for caching API calls:
-    // {
-    //   urlPattern: /^https?.*/api\/.*/,
-    //   handler: 'NetworkFirst',
-    //   options: {
-    //     cacheName: 'api-cache',
-    //     expiration: {
-    //       maxEntries: 10,
-    //       maxAgeSeconds: 60 * 60, // 1 hour
-    //     },
-    //   },
-    // },
-  ],
+  disable: process.env.NODE_ENV === "development",
 });
 
-// =================================================================
-// 3. BUNDLE ANALYZER PLUGIN CONFIGURATION
-// This wraps the PWA-enabled config to add bundle analysis.
-// =================================================================
-const bundleAnalyzer = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-});
-
-// =================================================================
-// 4. EXPORT THE FINAL, CHAINED CONFIGURATION
-// The plugins are chained: bundleAnalyzer(pwaConfig(baseConfig))
-// =================================================================
-export default bundleAnalyzer(withPWAConfig(baseConfig));
+export default bundleAnalyzer(pwaConfig(baseConfig));
