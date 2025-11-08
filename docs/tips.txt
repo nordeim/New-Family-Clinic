@@ -4,3 +4,5 @@ cd database/migrations && sed -i 's/^\/\/ database\//-- database\//' *sql
 
 cd database/seeds && sed -i 's/^\/\/ database\//-- database\//' *sql
 
+egrep -n '```|^\/\/ |^# ' oo1
+
