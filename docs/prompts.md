@@ -64,6 +64,8 @@ Now, please meticulously create a comprehensive sub-plan to create all the neces
 
 awesome meticulous planning! yes, please meticulously proceed according to your plan.
 
+awesome meticulous planning! yes, please meticulously proceed according to your plan. always remember to double-check each file generated for completeness and correctness according to the sub-plan. ensure that each file generated/updated do not contain placeholder comments. since this is a crucial stage, please be more vigilant and diligent in validation.
+
 ---
 
 awesome meticulous work so far! but you did not give me the complete working replacement file for `lib/trpc/root.ts`. now, please meticulously double check and validate the following edited version to make sure it is correct and accurate. Remember to always generate a complete working replacement file for each file that needs updating.
