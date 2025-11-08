@@ -6,6 +6,8 @@ diff oo1 oo2
 
 python3 extract_code_files.py oo1
 
+wget https://raw.githubusercontent.com/nordeim/Gabriel-Family-Clinic-v2/refs/heads/main/
+
 cd database/migrations && sed -i 's/^\/\/ database\//-- database\//' *sql
 
 cd database/seeds && sed -i 's/^\/\/ database\//-- database\//' *sql
