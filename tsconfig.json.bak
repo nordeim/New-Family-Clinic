@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    /* Base Options */
     "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -10,10 +11,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+
+    /* Strictness */
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
+
+    /* Bundler & Framework Config */
     "moduleResolution": "bundler",
     "jsx": "preserve",
     "incremental": true,
@@ -22,15 +27,16 @@
         "name": "next"
       }
     ],
+
+    /* Path Aliases: Simplified to a single, robust alias */
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*", "src/components/*"],
-      "@/lib/*": ["lib/*", "src/lib/*"],
-      "@/styles/*": ["styles/*", "src/styles/*"],
-      "@/hooks/*": ["hooks/*", "src/hooks/*"],
-      "@/types/*": ["types/*", "src/types/*"],
-      "@/env": ["src/env.js", "env.js"],
-      "~/*": ["src/*"]
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/types/*": ["./types/*"],
+      "@/env": ["./src/env.js"]
     }
   },
   "include": [
@@ -38,7 +44,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "playwright.config.ts"
+    "playwright.config.ts" // Include Playwright config for type checking
   ],
   "exclude": ["node_modules"]
 }

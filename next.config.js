@@ -1,18 +1,14 @@
 // next.config.js
-
-/**
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
- * This is especially useful for Docker builds.
- */
+// ESM-style Next config (project package.json sets "type": "module")
 import "./src/env.js";
 
-import withBundleAnalyzer from "@next/bundle-analyzer";
-import withPWA from "next-pwa";
+import withBundleAnalyzerFactory from "@next/bundle-analyzer";
+import withPWAFactory from "next-pwa";
+import path from "path";
 
-// =================================================================
-// 1. SECURITY HEADERS CONFIGURATION (from Phase 9)
-// Defines a strict Content Security Policy and other security headers.
-// =================================================================
+/**
+ * Content Security Policy string built once and normalized
+ */
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline';
@@ -26,15 +22,12 @@ const cspHeader = `
     upgrade-insecure-requests;
 `;
 
-// =================================================================
-// 2. BASE NEXT.JS CONFIGURATION (Consolidated)
-// All core Next.js settings go here.
-// =================================================================
 /** @type {import('next').NextConfig} */
 const baseConfig = {
   reactStrictMode: true,
-  
-  // Image Optimization configuration (from Phase 8)
+  compress: true,
+  poweredByHeader: false,
+
   images: {
     remotePatterns: [
       {
@@ -45,13 +38,6 @@ const baseConfig = {
     formats: ["image/avif", "image/webp"],
   },
 
-  // Enable Gzip compression (from Phase 8)
-  compress: true,
-
-  // Remove the "x-powered-by" header for security (Best Practice)
-  poweredByHeader: false,
-  
-  // Add security headers (from Phase 9)
   async headers() {
     return [
       {
@@ -59,7 +45,7 @@ const baseConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: cspHeader.replace(/\s{2,}/g, ' ').trim(),
+            value: cspHeader.replace(/\s{2,}/g, " ").trim(),
           },
           {
             key: "X-Content-Type-Options",
@@ -79,35 +65,55 @@ const baseConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()", // Restrict sensitive APIs by default
+            value: "camera=(), microphone=(), geolocation=()",
           },
         ],
       },
     ];
   },
+
+  /**
+   * Provide a webpack alias guard so runtime resolution matches tsconfig paths.
+   * This helps resolve both t3-style "~" imports and "@/..." imports at runtime.
+   */
+  webpack(config) {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      // Map t3-style ~ alias to src
+      "~": path.resolve(process.cwd(), "src"),
+      // Mirror TypeScript path aliases to runtime
+      "@/components": path.resolve(process.cwd(), "components"),
+      "@/lib": path.resolve(process.cwd(), "lib"),
+      "@/styles": path.resolve(process.cwd(), "styles"),
+      "@/hooks": path.resolve(process.cwd(), "hooks"),
+      "@/types": path.resolve(process.cwd(), "types"),
+      // Also map src variants to be tolerant during migration
+      "@/components/src": path.resolve(process.cwd(), "src/components"),
+      "@/lib/src": path.resolve(process.cwd(), "src/lib"),
+      "@/styles/src": path.resolve(process.cwd(), "src/styles"),
+    };
+    return config;
+  },
 };
 
-// =================================================================
-// 3. PWA PLUGIN CONFIGURATION (from Phase 8)
-// This wraps the base config to add PWA capabilities.
-// =================================================================
-const pwaConfig = withPWA({
+/**
+ * Plugin factories: create configured wrappers.
+ * Use factories (not the raw import) per plugin docs.
+ */
+const withPWA = withPWAFactory({
   dest: "public",
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
 });
 
-// =================================================================
-// 4. BUNDLE ANALYZER PLUGIN CONFIGURATION (from Phase 8)
-// This wraps the PWA-enabled config to add bundle analysis.
-// =================================================================
-const bundleAnalyzer = withBundleAnalyzer({
+const withBundleAnalyzer = withBundleAnalyzerFactory({
   enabled: process.env.ANALYZE === "true",
 });
 
-// =================================================================
-// 5. EXPORT THE FINAL, CHAINED CONFIGURATION
-// The plugins are chained in order: bundleAnalyzer(pwaConfig(baseConfig))
-// =================================================================
-export default bundleAnalyzer(pwaConfig(baseConfig));
+/**
+ * Chain plugins: bundle analyzer wraps PWA which wraps the base config.
+ * Export as default ESM export (package.json: "type": "module").
+ */
+export default withBundleAnalyzer(withPWA(baseConfig));
