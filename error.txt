@@ -1,48 +1,13 @@
-$ npm install --legacy-peer-deps react-server-dom-webpack 
-
-added 4 packages, removed 43 packages, and audited 944 packages in 5s
-
-216 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-
-$ npm list | egrep 'react|next|auth|prisma' 
-├── @auth/prisma-adapter@2.11.1
-├── @next/bundle-analyzer@16.0.1
-├── @prisma/client@6.19.0
-├── @radix-ui/react-label@2.1.8
-├── @radix-ui/react-select@2.2.6
-├── @radix-ui/react-slot@1.2.4
-├── @stripe/react-stripe-js@5.3.0
-├── @t3-oss/env-nextjs@0.13.8
-├── @tanstack/react-query@5.90.7
-├── @trpc/next@11.7.1
-├── @trpc/react-query@11.7.1
-├── @types/react-dom@18.3.7
-├── @types/react@18.3.26
-├── class-variance-authority@0.7.1
-├── eslint-config-next@14.2.33
-├── lucide-react@0.553.0
-├── next-auth@4.24.13
-├── next-pwa@5.6.0
-├── next@14.2.33
-├── prisma@6.19.0
-├── react-dom@18.3.1
-├── react-hook-form@7.66.0
-├── react-server-dom-webpack@19.2.0
-├── react@18.3.1
-
 $ npx prisma generate
 Prisma schema loaded from prisma/schema.prisma
 
-✔ Generated Prisma Client (v6.19.0) to ./node_modules/@prisma/client in 344ms
+✔ Generated Prisma Client (v6.19.0) to ./node_modules/@prisma/client in 190ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
 
-
+pete@pop-os:/home/project/Gabriel-Family-Clinic-v2
 $ npm run build
 
 > gabriel-family-clinic-v2@0.1.0 build
@@ -55,8 +20,8 @@ $ npm run build
 > [PWA] Compile server
 > [PWA] Compile server
 > [PWA] Compile client (static)
-> [PWA] Auto register service worker with: /Home1/project/Gabriel-Family-Clinic-v2/node_modules/next-pwa/register.js
-> [PWA] Service worker: /Home1/project/Gabriel-Family-Clinic-v2/public/sw.js
+> [PWA] Auto register service worker with: /home/project/Gabriel-Family-Clinic-v2/node_modules/next-pwa/register.js
+> [PWA] Service worker: /home/project/Gabriel-Family-Clinic-v2/public/sw.js
 > [PWA]   url: /sw.js
 > [PWA]   scope: /
  ⚠ Compiled with warnings

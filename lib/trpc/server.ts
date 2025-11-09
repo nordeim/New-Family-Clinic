@@ -5,7 +5,7 @@ import { ZodError } from "zod";
 
 import { type createContext } from "./context";
 
-const t = initTRPC.context<typeof createContext>().create({
+export const t = initTRPC.context<typeof createContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
