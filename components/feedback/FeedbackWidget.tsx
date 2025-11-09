@@ -8,6 +8,7 @@ import { MessageSquare } from "lucide-react";
 import { api } from "@/lib/trpc/client";
 import { Textarea } from "@/components/ui/textarea"; // Use canonical lowercase path
 import { StarRating } from "@/components/ui/StarRating"; // Assuming this component exists
+import { getMutationLoading } from "@/lib/utils";
 
 export function FeedbackWidget() {
   const { user } = useAuth();
@@ -84,7 +85,7 @@ export function FeedbackWidget() {
             <Button
               className="w-full"
               onClick={handleSubmit}
-              isLoading={(submitMutation as any).isLoading}
+              isLoading={getMutationLoading(submitMutation)}
             >
               Submit Feedback
             </Button>

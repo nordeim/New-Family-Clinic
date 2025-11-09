@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { api } from "@/lib/trpc/client";
+import { getMutationLoading } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { PaymentForm } from "./PaymentForm";
 import { PriceBreakdown } from "./PriceBreakdown";
@@ -23,7 +24,7 @@ export function CheckoutForm({ appointmentId }: CheckoutFormProps) {
     data: createPaymentIntent.data,
     error: createPaymentIntent.error,
   };
-  const isCreatingIntent = (createPaymentIntent as any).isLoading;
+  const isCreatingIntent = getMutationLoading(createPaymentIntent);
 
   useEffect(() => {
     // Automatically create the payment intent when the component mounts

@@ -3,6 +3,7 @@ import { router, protectedProcedure } from "../server";
 import { z } from "zod";
 import { stripeService } from "@/lib/integrations/stripe";
 import { CHASCalculator } from "@/lib/utils/chas-calculator";
+import { type ChasCardType } from "@/types/database.types";
 import { TRPCError } from "@trpc/server";
 
 export const paymentRouter = router({
@@ -29,14 +30,22 @@ export const paymentRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "No payment is required for this appointment." });
       }
 
-      // 2. Calculate final amount with CHAS subsidy
-      // Supabase `select(...!inner(...))` can return an array for nested relations.
-      const patient = Array.isArray(appointment.patients)
-        ? appointment.patients[0]
-        : (appointment.patients as any);
+          // 2. Calculate final amount with CHAS subsidy
+          // Supabase `select(...!inner(...))` can return an array for nested relations.
+          type PatientShape = { id?: string; chas_card_type?: string };
+          const patientsField = (appointment as Record<string, unknown>).patients;
+          const patient: PatientShape | undefined = Array.isArray(patientsField)
+            ? (patientsField[0] as PatientShape)
+            : (patientsField as PatientShape | undefined);
+
+      const rawChas = patient?.chas_card_type as unknown;
+      const chasCardType: ChasCardType =
+        rawChas === "blue" || rawChas === "orange" || rawChas === "green" || rawChas === "none"
+          ? (rawChas as ChasCardType)
+          : "none";
 
       const { subsidyAmount, finalAmount } = CHASCalculator.calculate({
-        chasCardType: patient?.chas_card_type,
+        chasCardType,
         consultationFee,
       });
       
@@ -72,8 +81,8 @@ export const paymentRouter = router({
           "sgd",
           {
             appointmentId: input.appointmentId,
-            paymentId: paymentRecord.id, // Our internal payment ID
-            patientId: patient?.id,
+            paymentId: String(paymentRecord.id), // Our internal payment ID as string
+            patientId: patient?.id ?? "",
           }
         );
 

@@ -11,3 +11,21 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+/**
+ * Safely extract `isLoading` state from a mutation-like object returned by
+ * various react-query / tRPC hooks without using `any`.
+ *
+ * The function accepts `unknown` and checks for common shapes:
+ * - `{ isLoading: boolean }`
+ * - `{ status: string }` where `status === 'loading'`
+ */
+export function getMutationLoading(obj: unknown): boolean {
+  if (typeof obj !== "object" || obj === null) return false;
+  const o = obj as Record<string, unknown>;
+
+  if (typeof o.isLoading === "boolean") return o.isLoading as boolean;
+  if (typeof o.status === "string") return (o.status as string) === "loading";
+
+  return false;
+}

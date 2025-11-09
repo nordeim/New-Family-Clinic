@@ -1,5 +1,6 @@
 // src/server/auth/config.ts
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { NextAuthOptions } from "next-auth";
 import { type DefaultSession } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
@@ -31,7 +32,7 @@ declare module "next-auth" {
  *
  * @see https://next-auth.js.org/configuration/options
  */
-export const authConfig = {
+export const authConfig: NextAuthOptions = {
   adapter: PrismaAdapter(db),
 
   providers: [
@@ -52,12 +53,9 @@ export const authConfig = {
     }),
   },
 
-  /**
-   * Trusted host configuration
-   * - NEXTAUTH_URL should be set in .env.local or .env
-   * - trustHost: true allows NextAuth to accept the configured host
-   */
-  trustHost: true,
-  basePath: "/api/auth",
+  // NOTE: `trustHost` and `basePath` are not part of NextAuthOptions type in
+  // the installed `next-auth` version. If you need custom routing or host
+  // trust configuration, set those in the NextAuth handler or framework-level
+  // configuration instead of here.
 };
 
