@@ -1,4 +1,47 @@
-$ rm -rf .next
+$ npm install --legacy-peer-deps react-server-dom-webpack 
+
+added 4 packages, removed 43 packages, and audited 944 packages in 5s
+
+216 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+$ npm list | egrep 'react|next|auth|prisma' 
+├── @auth/prisma-adapter@2.11.1
+├── @next/bundle-analyzer@16.0.1
+├── @prisma/client@6.19.0
+├── @radix-ui/react-label@2.1.8
+├── @radix-ui/react-select@2.2.6
+├── @radix-ui/react-slot@1.2.4
+├── @stripe/react-stripe-js@5.3.0
+├── @t3-oss/env-nextjs@0.13.8
+├── @tanstack/react-query@5.90.7
+├── @trpc/next@11.7.1
+├── @trpc/react-query@11.7.1
+├── @types/react-dom@18.3.7
+├── @types/react@18.3.26
+├── class-variance-authority@0.7.1
+├── eslint-config-next@14.2.33
+├── lucide-react@0.553.0
+├── next-auth@4.24.13
+├── next-pwa@5.6.0
+├── next@14.2.33
+├── prisma@6.19.0
+├── react-dom@18.3.1
+├── react-hook-form@7.66.0
+├── react-server-dom-webpack@19.2.0
+├── react@18.3.1
+
+$ npx prisma generate
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.19.0) to ./node_modules/@prisma/client in 344ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
 
 $ npm run build
 
@@ -12,36 +55,110 @@ $ npm run build
 > [PWA] Compile server
 > [PWA] Compile server
 > [PWA] Compile client (static)
-> [PWA] Auto register service worker with: /home/project/Gabriel-Family-Clinic-v2/node_modules/next-pwa/register.js
-> [PWA] Service worker: /home/project/Gabriel-Family-Clinic-v2/public/sw.js
+> [PWA] Auto register service worker with: /Home1/project/Gabriel-Family-Clinic-v2/node_modules/next-pwa/register.js
+> [PWA] Service worker: /Home1/project/Gabriel-Family-Clinic-v2/public/sw.js
 > [PWA]   url: /sw.js
 > [PWA]   scope: /
+ ⚠ Compiled with warnings
+
+./lib/trpc/middlewares/adminAuth.ts
+Attempted import error: 't' is not exported from '../server' (imported as 't').
+
+Import trace for requested module:
+./lib/trpc/middlewares/adminAuth.ts
+./lib/trpc/routers/admin.router.ts
+./lib/trpc/root.ts
+./pages/api/trpc/[...trpc].ts
+
+./lib/trpc/middlewares/doctorAuth.ts
+Attempted import error: 't' is not exported from '../server' (imported as 't').
+
+Import trace for requested module:
+./lib/trpc/middlewares/doctorAuth.ts
+./lib/trpc/routers/consultation.router.ts
+./lib/trpc/root.ts
+./pages/api/trpc/[...trpc].ts
+
+
 Failed to compile.
 
-./pages/_app.tsx
-Module not found: Can't resolve '@/lib/trpc/react'
+./pages/api/cron/process-jobs.ts
+18:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-https://nextjs.org/docs/messages/module-not-found
+./pages/api/health.ts
+20:15  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+32:15  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-./pages/_app.tsx
-Module not found: Can't resolve '@/lib/auth/AuthContext'
+./pages/api/webhooks/stripe.ts
+25:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-https://nextjs.org/docs/messages/module-not-found
+./pages/dashboard/vaccinations/index.tsx
+7:17  Warning: 'records' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+7:26  Warning: 'isLoading' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
-./pages/_app.tsx
-Module not found: Can't resolve '@/styles/theme'
+./pages/doctor/consultations/[appointmentId].tsx
+12:11  Warning: 'appointmentId' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
-https://nextjs.org/docs/messages/module-not-found
+./pages/doctor/dashboard/index.tsx
+15:15  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+15:54  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
 
-./pages/_app.tsx
-Module not found: Can't resolve '@/components/layout/Layout'
+./pages/doctor/patients/[patientId]/history.tsx
+13:11  Warning: 'data' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
-https://nextjs.org/docs/messages/module-not-found
+./pages/health-screening/index.tsx
+6:17  Warning: 'packages' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+6:27  Warning: 'isLoading' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
-./pages/_app.tsx
-Module not found: Can't resolve '@/components/feedback/FeedbackWidget'
+./components/doctor/TodaySchedule.tsx
+12:10  Warning: 'cn' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+61:25  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
 
-https://nextjs.org/docs/messages/module-not-found
+./components/payment/CheckoutForm.tsx
+3:21  Warning: 'useState' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+31:6  Warning: React Hook useEffect has a missing dependency: 'data'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
 
+./components/telemedicine/VideoCall.tsx
+4:1  Warning: Imports "DailyCall" are only used as type.  @typescript-eslint/consistent-type-imports
+36:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-> Build failed because of webpack errors
+./lib/auth/AuthContext.tsx
+4:1  Warning: Imports "ReactNode" are only used as type.  @typescript-eslint/consistent-type-imports
+6:1  Warning: All imports in the declaration are only used as types. Use `import type`.  @typescript-eslint/consistent-type-imports
+
+./lib/auth/actions.ts
+28:58  Warning: 'nric' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./lib/integrations/resend.ts
+5:1  Warning: All imports in the declaration are only used as types. Use `import type`.  @typescript-eslint/consistent-type-imports
+
+./lib/jobs/queue.ts
+4:1  Warning: All imports in the declaration are only used as types. Use `import type`.  @typescript-eslint/consistent-type-imports
+54:17  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/notifications/types.ts
+2:1  Warning: All imports in the declaration are only used as types. Use `import type`.  @typescript-eslint/consistent-type-imports
+
+./lib/trpc/context.ts
+3:35  Warning: 'CookieOptions' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+7:3  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+8:3  Warning: 'resHeaders' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./lib/trpc/routers/admin.router.ts
+119:56  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/trpc/routers/consultation.router.ts
+32:15  Warning: 'data' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./lib/trpc/routers/health.router.ts
+5:56  Warning: 'ctx' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+10:61  Warning: 'ctx' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./lib/trpc/routers/patient.router.ts
+61:56  Warning: 'ctx' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./lib/trpc/routers/telemedicine.router.ts
+66:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+
