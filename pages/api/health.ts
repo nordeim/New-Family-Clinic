@@ -17,9 +17,10 @@ async function checkDatabase(): Promise<HealthCheckResult> {
     const { error } = await supabase.from("clinics").select("id").limit(1);
     if (error) throw error;
     return { status: "healthy" };
-  } catch (e: any) {
-    console.error("Health Check Error: Database failed.", e.message);
-    return { status: "down", details: e.message };
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("Health Check Error: Database failed.", message);
+    return { status: "down", details: message };
   }
 }
 
@@ -29,9 +30,10 @@ async function checkStripe(): Promise<HealthCheckResult> {
     // A lightweight, read-only API call.
     await stripe.customers.list({ limit: 1 });
     return { status: "healthy" };
-  } catch (e: any) {
-    console.error("Health Check Error: Stripe API failed.", e.message);
-    return { status: "down", details: e.message };
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("Health Check Error: Stripe API failed.", message);
+    return { status: "down", details: message };
   }
 }
 

@@ -58,7 +58,7 @@ export function TodaySchedule() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Today's Appointments</CardTitle>
+        <CardTitle>Today&apos;s Appointments</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (

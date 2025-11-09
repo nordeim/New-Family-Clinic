@@ -15,8 +15,9 @@ export default async function handler(
   try {
     await processor.run(); // Process one job per invocation
     res.status(200).json({ message: "Job processor ran successfully." });
-  } catch (error: any) {
-    console.error("Cron job processor failed:", error);
-    res.status(500).json({ message: "Job processor failed.", error: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Cron job processor failed:", message);
+    res.status(500).json({ message: "Job processor failed.", error: message });
   }
 }

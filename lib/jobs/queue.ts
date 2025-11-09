@@ -51,11 +51,12 @@ export class JobProcessor {
     try {
       await handler(job.payload);
       await this.markAsCompleted(job.id);
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
       if (job.attempts + 1 >= MAX_ATTEMPTS) {
-        await this.markAsFailed(job.id, e.message);
+        await this.markAsFailed(job.id, message);
       } else {
-        await this.retryJob(job.id, e.message);
+        await this.retryJob(job.id, message);
       }
     }
   }

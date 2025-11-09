@@ -12,7 +12,7 @@ function DoctorDashboardPage() {
       <div>
         <h1 className="text-3xl font-bold">Doctor Dashboard</h1>
         <p className="text-neutral-500">
-          Here's an overview of your day, Dr. [Doctor's Name].
+          Here&apos;s an overview of your day, Dr. [Doctor&apos;s Name].
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

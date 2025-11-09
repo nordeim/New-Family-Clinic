@@ -61,7 +61,8 @@ export const adminRouter = router({
         throw new Error("Failed to fetch users.");
       }
 
-      return { users: data, totalCount: count ?? 0 };
+  // Return `total` for compatibility with existing frontend components
+  return { users: data, total: count ?? 0 };
     }),
 
   /**
@@ -116,7 +117,12 @@ export const adminRouter = router({
         const user = patient.users;
         if (!user) continue;
 
-        const prefs = user.notification_preferences as any; // Cast for easier access
+        type NotificationPrefs = {
+          sms?: { enabled?: boolean };
+          email?: { enabled?: boolean };
+        } | null | undefined;
+
+        const prefs = user.notification_preferences as NotificationPrefs; // Narrowed type for notification preferences
 
         if (input.channel === "sms" && prefs?.sms?.enabled && user.phone) {
           jobPromises.push(enqueueJob("send-sms", { to: user.phone, message: input.message }));

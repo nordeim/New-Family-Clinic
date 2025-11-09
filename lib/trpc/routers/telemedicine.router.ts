@@ -63,8 +63,9 @@ export const telemedicineRouter = router({
         if (insertError) throw insertError;
 
         return { roomUrl: room.url };
-      } catch (e: any) {
-        console.error("Telemedicine session creation failed:", e);
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        console.error("Telemedicine session creation failed:", message);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Could not create or retrieve the video session.",

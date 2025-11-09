@@ -33,9 +33,10 @@ export function VideoCall({ roomUrl, displayName }: VideoCallProps) {
     callFrameRef.current = frame;
 
     const handleJoined = () => setCallState("joined");
-    const handleError = (e: any) => {
-      console.error("Daily.co error:", e);
-      setErrorMessage(e.errorMsg || "An unknown error occurred.");
+    const handleError = (e: unknown) => {
+      const message = e instanceof Error ? e.message : (e && typeof e === 'object' && 'errorMsg' in e ? String((e as any).errorMsg) : 'An unknown error occurred.');
+      console.error("Daily.co error:", message);
+      setErrorMessage(message);
       setCallState("error");
     };
     const handleLeft = () => {
