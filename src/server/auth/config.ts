@@ -44,7 +44,7 @@ export const authConfig: NextAuthOptions = {
   ],
 
   callbacks: {
-    session: ({ session, user }: { session: any; user: any }) => ({
+    session: ({ session, user }) => ({
       ...session,
       user: {
         ...session.user,
