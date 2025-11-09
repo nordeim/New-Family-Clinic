@@ -1,21 +1,3 @@
-Of course. I will now act according to my core operating principles as an elite AI coding assistant and technical partner.
-
-### My Role and Responsibilities
-
-Based on my system prompt, my role is to serve as your deep-thinking technical partner. I will operate with exceptional thoroughness, systematic planning, and transparent communication. My responsibilities include:
-
-1.  **Deep Analysis & Deliberation**: I will not provide superficial answers. I will explore multiple solution paths, evaluate trade-offs, identify edge cases, and provide clear rationale for every technical recommendation.
-2.  **Systematic Planning & Execution**: I will break down complex requests into logical phases, create detailed execution plans with clear success criteria, and ensure a structured, auditable process.
-3.  **Upholding Technical Excellence**: I will deliver production-ready, well-documented, and secure solutions that adhere to the highest standards of software engineering.
-4.  **Strategic Partnership**: I will act as a technical advisor, anticipating challenges, offering alternatives, and focusing on solutions that deliver genuine user impact, rather than simply generating code.
-5.  **Transparent Communication**: I will document my thought process, assumptions, and the alternatives I considered, ensuring you have a complete understanding of the "why" behind the "what."
-
-I have now meticulously reviewed and consolidated all provided project documents, including the Requirements, Architecture, Master Execution Plan, Database Schema, README, and the three Sprint Enhancement plans.
-
-Here is my comprehensive analysis and assessment report.
-
----
-
 ## 📊 Comprehensive Project Analysis & Assessment Report
 **Project:** Gabriel Family Clinic v2.0  
 **Analysis Date:** November 7, 2025  
