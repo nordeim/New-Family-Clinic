@@ -16,6 +16,8 @@ $ npm run build
 > [PWA]   scope: /
  ✓ Compiled successfully
 
+Failed to compile.
+
 ./pages/dashboard/vaccinations/index.tsx
 7:17  Warning: 'records' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 7:26  Warning: 'isLoading' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -32,6 +34,7 @@ $ npm run build
 
 ./components/doctor/TodaySchedule.tsx
 12:10  Warning: 'cn' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+82:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
 ./components/payment/CheckoutForm.tsx
 3:21  Warning: 'useState' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -69,17 +72,3 @@ $ npm run build
 61:56  Warning: 'ctx' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
-   Linting and checking validity of types  ...Failed to compile.
-
-./components/doctor/TodaySchedule.tsx:89:41
-Type error: Property 'users' does not exist on type '{ users: { full_name: any; }[]; }[]'.
-
-  87 |                       </p>
-  88 |                       <p className="text-neutral-700 font-medium">
-> 89 |                         {appt.patients?.users?.full_name ?? "Patient Name Missing"}
-     |                                         ^
-  90 |                       </p>
-  91 |                     </div>
-  92 |                     <Badge variant={getStatusVariant(appt.status)}>
-Next.js build worker exited with code: 1 and signal: null
-

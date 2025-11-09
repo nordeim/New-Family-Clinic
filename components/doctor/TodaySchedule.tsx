@@ -74,28 +74,36 @@ export function TodaySchedule() {
           </div>
         ) : (
           <ul className="space-y-3">
-            {data.appointments.map((appt) => (
-              <li key={appt.id}>
-                <Link
-                  href={`/doctor/consultations/${appt.id}`}
-                  className="block rounded-lg border p-3 transition-all hover:bg-neutral-50 hover:shadow-sm"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <p className="font-semibold text-primary">
-                        {dayjs(appt.appointment_time, "HH:mm:ss").format("hh:mm A")}
-                      </p>
-                      <p className="text-neutral-700 font-medium">
-                        {appt.patients?.users?.full_name ?? "Patient Name Missing"}
-                      </p>
+            {data.appointments.map((appt) => {
+              // appt.patients can be returned from Supabase as an array or as an object
+              // depending on how the select() is written. Normalize safely here.
+              const patientName = Array.isArray(appt.patients)
+                ? appt.patients[0]?.users?.[0]?.full_name
+                : (appt.patients as any)?.users?.full_name;
+
+              return (
+                <li key={appt.id}>
+                  <Link
+                    href={`/doctor/consultations/${appt.id}`}
+                    className="block rounded-lg border p-3 transition-all hover:bg-neutral-50 hover:shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <p className="font-semibold text-primary">
+                          {dayjs(appt.appointment_time, "HH:mm:ss").format("hh:mm A")}
+                        </p>
+                        <p className="text-neutral-700 font-medium">
+                          {patientName ?? "Patient Name Missing"}
+                        </p>
+                      </div>
+                      <Badge variant={getStatusVariant(appt.status)}>
+                        {appt.status.replace('_', ' ')}
+                      </Badge>
                     </div>
-                    <Badge variant={getStatusVariant(appt.status)}>
-                      {appt.status.replace('_', ' ')}
-                    </Badge>
-                  </div>
-                </Link>
-              </li>
-            ))}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
       </CardContent>
