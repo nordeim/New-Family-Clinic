@@ -263,7 +263,9 @@ export default function LandingPage() {
             </a>
             <Button
               className="hidden sm:inline-flex rounded-full h-7 px-4 text-[10px] bg-[#ff6b6b] hover:bg-[#e05555] shadow-md"
-              onClick={() => scrollToId("hero-book")}
+              onClick={() => {
+                window.location.href = "/booking";
+              }}
             >
               Book Appointment
             </Button>
@@ -322,7 +324,9 @@ export default function LandingPage() {
               <div className="mt-5 flex flex-wrap gap-3">
                 <Button
                   className="rounded-full h-10 px-6 bg-[#ff6b6b] hover:bg-[#e05555] text-xs shadow-lg"
-                  onClick={() => scrollToId("hero-book")}
+                  onClick={() => {
+                    window.location.href = "/booking";
+                  }}
                 >
                   Book an Appointment
                 </Button>
