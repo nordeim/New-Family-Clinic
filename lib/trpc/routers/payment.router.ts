@@ -172,6 +172,9 @@ export const paymentRouter = router({
           originalAmount: consultationFee,
         };
       } catch (e) {
+        // PDPA: do not log raw request bodies, card details, or PHI here.
+        // If logging is added, include only technical details such as paymentId,
+        // appointmentId, and sanitized error codes/messages.
         // Best-effort cleanup could be added here (e.g., mark payment as failed).
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
