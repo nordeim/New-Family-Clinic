@@ -30,18 +30,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Handle the event
   switch (event.type) {
-    case "payment_intent.succeeded":
+    case "payment_intent.succeeded": {
       const paymentIntent = event.data.object;
       console.log(`✅ PaymentIntent succeeded: ${paymentIntent.id}`);
-      
-      const paymentId = paymentIntent.metadata.paymentId;
+
+      const paymentId = paymentIntent.metadata?.paymentId as string | undefined;
       if (!paymentId) {
         console.error("❌ Missing paymentId in webhook metadata");
         break; // Acknowledge event but log error
       }
 
-      // Update the payment status in our database using an admin client
       const supabaseAdmin = createSupabaseAdminClient();
+
+      // Mark payment as completed. Keep this focused and safe:
+      // - status: "completed"
+      // - transaction_reference: latest_charge from Stripe
+      // Note:
+      // - Paid/outstanding reconciliation can be handled by a dedicated SQL function
+      //   or a follow-up job if needed. We avoid over-encoding business rules here.
       const { error } = await supabaseAdmin
         .from("payments")
         .update({
@@ -52,10 +58,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (error) {
         console.error(`❌ Failed to update payment record ${paymentId}:`, error);
-        // We could return a 500 here to have Stripe retry,
-        // but it might cause repeated errors. Logging is safer.
+        // We keep 200 to avoid infinite Stripe retries; errors are logged for ops review.
+      } else {
+        console.log(`✅ Payment record ${paymentId} updated to completed.`);
       }
+
       break;
+    }
 
     // ... handle other event types (e.g., payment_intent.payment_failed)
 

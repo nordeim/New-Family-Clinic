@@ -8,7 +8,13 @@ Prepared by: GitHub Copilot
 ---
 
 ## 1) Project overview (one-paragraph)
-Gabriel Family Clinic v2.0 is a Next.js (Pages Router) TypeScript full-stack application that uses Supabase (Postgres, Auth, Storage, Realtime) for backend services, tRPC for a type-safe API, Mantine + Tailwind for UI, and Vercel for deployment. It follows repository + service patterns, uses Zod for validation, has database migrations/seeds, and integrates with Stripe/Twilio/Resend for payments and notifications. Primary goals: elderly-friendly UX, security/compliance (PDPA & MOH), and maintainability.
+Gabriel Family Clinic v2.0 is a Next.js TypeScript full-stack application that uses:
+- NextAuth + Prisma as the primary identity and session system
+- Supabase-hosted Postgres (with SQL migrations, RLS, and functions) as the core database
+- tRPC for a type-safe API
+- Mantine + Tailwind for UI
+- Stripe/Twilio/Resend for payments and notifications
+It follows repository + service patterns, uses Zod for validation, has database migrations/seeds, and targets elderly-friendly UX, security/compliance (PDPA & MOH), and maintainability.
 
 ---
 
@@ -76,6 +82,10 @@ Notes:
 - Notifications: Use NotificationFactory to instantiate SMS/Email/WhatsApp providers.
 - Transactions: For multi-step DB changes, use DB transactions where possible to preserve consistency.
 - RLS & security: Assume Row-Level Security is enabled — ensure procedures use authenticated user context and least privilege.
+- Auth & identity (CRITICAL, UPDATED 2025-11-11):
+  - NextAuth + Prisma is the SINGLE source of truth for application identity and sessions.
+  - Supabase is used as the managed Postgres engine (and optional storage/realtime), not as a separate auth system.
+  - All domain tables that reference a user (e.g. clinic.users, clinic.patients, clinic.doctors, payments, telemedicine_sessions, user_feedback) MUST ultimately link back to the NextAuth/Prisma user id (directly or via a well-defined mapping), not an independent Supabase Auth identity.
 
 ---
 
@@ -158,6 +168,50 @@ Notes:
   - database/migrations and database/seeds content
   - package.json scripts match docs (db:run-migrations, db:run-seeds)
 - Confirm whether mock mode flags exist for Stripe/Twilio/Resend.
+
+---
+## 15) Auth & Identity — Single Source of Truth (UPDATED)
+
+Decision:
+- NextAuth + Prisma is the primary identity and session system.
+- Supabase is used as:
+  - Managed Postgres for the application schema (clinic.*, booking.*, webhook.*, etc.).
+  - Optional provider for storage/realtime.
+- Supabase Auth MUST NOT be used as a second, parallel identity system in this codebase.
+
+Implications for contributors:
+- DO:
+  - Use NextAuth (src/server/auth/*) to authenticate users and obtain ctx.session.user in tRPC.
+  - Treat ctx.session.user.id (NextAuth/Prisma user id) as the canonical user identifier.
+  - Ensure relational tables reference this canonical id:
+    - clinic.users.id
+    - clinic.patients.user_id
+    - clinic.doctors.user_id
+    - user_feedback.user_id
+    - payments.*, telemedicine_sessions.*, and other user-bound records.
+  - Align Prisma models and SQL schema (clinic.users, clinic.patients, etc.) so they are consistent, or introduce a clear mapping layer.
+  - Use Supabase (via DATABASE_URL, postgres client, or server-side libraries) strictly for database operations, respecting RLS and audit policies.
+
+- DO NOT:
+  - Introduce or rely on Supabase Auth-based signup/login flows that create independent user identities.
+  - Write to ad-hoc public.users or divergent user tables that are not aligned with clinic.users / NextAuth/Prisma.
+  - Hard-code clinic_id, NRIC values, or other sensitive identifiers in code; always:
+    - Derive clinic_id from configuration or system_settings.
+    - Use proper hashing/encryption utilities for NRIC and other PHI.
+  - Bypass tRPC/NextAuth context for authorization in business logic.
+
+Current status (as of latest remediation):
+- NextAuth + Prisma:
+  - Configured in src/server/auth/config.ts and src/server/auth/index.ts.
+  - Drives tRPC context in src/server/api/trpc.ts.
+- Supabase-auth signup helper:
+  - lib/auth/actions.ts no longer creates Supabase Auth users or divergent profiles.
+  - It is intentionally a documented placeholder to prevent split-brain identity.
+- Future work:
+  - Implement a cohesive NextAuth-based registration/onboarding flow that:
+    - Creates a NextAuth/Prisma user.
+    - Inserts corresponding records into clinic.users and clinic.patients.
+  - Ensure all feature code (payments, telemedicine, feedback, booking, etc.) uses the canonical user id path consistently.
 
 ---
 

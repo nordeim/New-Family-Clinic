@@ -1,80 +1,48 @@
 // @/lib/auth/actions.ts
 "use server";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+
+/**
+ * Identity Alignment Note
+ *
+ * This module previously attempted to:
+ * - Use Supabase Auth to create users.
+ * - Insert into a separate `users` / `patients` model with hard-coded values.
+ *
+ * That conflicted with the chosen architecture:
+ * - NextAuth + Prisma is the primary identity system.
+ * - Supabase is used as the managed Postgres engine (and optional services),
+ *   not as a second, divergent auth provider.
+ *
+ * To prevent split-brain identity issues, this file is now a thin placeholder.
+ * All real signup/identity creation should go through:
+ * - NextAuth flows configured in `src/server/auth/*`
+ * - Prisma models aligned with `clinic.users` / `clinic.patients` tables.
+ *
+ * Future work (Phase 2 of remediation plan):
+ * - Implement a NextAuth-based signup/registration flow that:
+ *   - Creates a NextAuth/Prisma user.
+ *   - Writes a corresponding record into `clinic.users`.
+ *   - Optionally creates `clinic.patients` rows for patient signups.
+ * - Ensure that `ctx.session.user.id` maps 1:1 to `clinic.users.id`.
+ *
+ * For now, we expose a no-op that clearly communicates the required path.
+ */
+
 import { patientRegistrationSchema } from "@/types/zod-schemas";
-import { env } from "@/env";
 
 export async function signup(formData: unknown) {
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    { cookies: { get: (name) => cookieStore.get(name)?.value } }
-  );
-
-  // Use a service role client to insert into non-auth tables
-  const supabaseAdmin = createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
-    { cookies: { get: (name) => cookieStore.get(name)?.value } }
-  );
-
   const parsed = patientRegistrationSchema.safeParse(formData);
   if (!parsed.success) {
     return { error: "Invalid form data.", details: parsed.error.flatten() };
   }
 
-  const { email, password, fullName, phone, dateOfBirth, nric: _nric } = parsed.data;
+  // This is intentionally not creating users directly.
+  // Use NextAuth-based flows + Prisma + clinic.users/clinic.patients instead.
 
-  // 1. Create the auth user
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        full_name: fullName,
-      },
-    },
-  });
-
-  if (authError || !authData.user) {
-    return { error: authError?.message ?? "Could not sign up user." };
-  }
-  const userId = authData.user.id;
-
-  // 2. Create the corresponding public.users record
-  const { error: userError } = await supabaseAdmin.from("users").insert({
-    id: userId,
-    full_name: fullName,
-    email: email,
-    phone: phone,
-    role: "patient",
-  });
-  
-  if (userError) {
-    // This is a critical failure. We should ideally roll back the auth user creation.
-    // For now, we'll log it and return an error.
-    console.error("Failed to create public.users record:", userError);
-    return { error: "Failed to create user profile. Please contact support." };
-  }
-  
-  // 3. Create the patient profile
-  const { error: patientError } = await supabaseAdmin.from("patients").insert({
-    user_id: userId,
-    date_of_birth: dateOfBirth,
-    // A placeholder clinicId for now. A real app would have a selection.
-    clinic_id: "your-default-clinic-uuid", 
-    patient_number: `P-${Date.now()}`, // Placeholder logic
-    nric_hash: "...", // Hash the NRIC server-side
-    nric_encrypted: "...", // Encrypt the NRIC server-side
-    gender: "prefer_not_to_say", // Default or from form
-  });
-
-  if (patientError) {
-    console.error("Failed to create patient profile:", patientError);
-    return { error: "Failed to create patient profile. Please contact support." };
-  }
-
-  return { error: null, success: true };
+  return {
+    error: null,
+    success: false,
+    message:
+      "Direct Supabase-based signup is disabled. Use the NextAuth/Prisma signup flow aligned with clinic.users/clinic.patients.",
+  };
 }

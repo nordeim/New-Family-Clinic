@@ -1,10 +1,14 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+} from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 import { AppointmentService } from "~/services/appointment-service";
 
 /**
  * Zod schema for booking requests.
- * Strict but user-friendly; matches Phase 1+2 UX copy.
+ * Strict but user-friendly; matches the booking page UX.
  */
 const requestBookingInput = z.object({
   name: z
@@ -35,33 +39,40 @@ export const appointmentRouter = createTRPCRouter({
   /**
    * requestBooking
    *
-   * Phase 2 (lightweight real flow):
-   * - Accepts a simple booking intent payload.
-   * - Delegates to AppointmentService (currently in-memory/idempotent).
-   * - Returns a stable response that the UI can rely on.
+   * Public booking intent endpoint used by the /booking page.
+   * Current behavior:
+   * - Validates payload.
+   * - Delegates to AppointmentService, which handles idempotency and orchestration.
+   * - Returns a stable, UI-focused response.
    *
    * Future:
-   * - Swap AppointmentService implementation to call real DB / booking.create_booking
-   *   without changing this public contract.
+   * - AppointmentService will be upgraded to call the real DB pipeline
+   *   (booking_requests + booking.create_booking()) without changing this contract.
    */
   requestBooking: publicProcedure
     .input(requestBookingInput)
     .mutation(async ({ input }) => {
       try {
         const result = await AppointmentService.createBookingRequest(input);
+
         return {
           requestId: result.requestId,
           status: result.status,
           message: result.message,
+          appointmentId: result.appointmentId,
+          appointmentNumber: result.appointmentNumber,
         };
       } catch (error) {
-        // Normalize error message; avoid leaking internals
         const message =
           error instanceof Error && error.message
             ? error.message
             : "Unable to process your request at the moment. Please try again or call the clinic.";
-        // Let tRPC map this as a BAD_REQUEST-style error
-        throw new Error(message);
+
+        // Normalize as a BAD_REQUEST so the client can handle gracefully.
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message,
+        });
       }
     }),
 });
