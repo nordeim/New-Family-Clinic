@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { api } from "~/trpc/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +43,7 @@ function scrollToForm() {
 
 export default function BookingPage() {
   const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     // Ensure we start near the form for a focused experience
@@ -49,7 +51,9 @@ export default function BookingPage() {
     return () => window.clearTimeout(handle);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const requestBooking = api.appointment.requestBooking.useMutation();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
 
@@ -82,7 +86,7 @@ export default function BookingPage() {
     clearErrors();
 
     const name = get("bk-name");
-    const phone = get("bk-phone");
+    const phoneRaw = get("bk-phone");
     const reason = get("bk-reason");
     const when = get("bk-when");
 
@@ -93,12 +97,17 @@ export default function BookingPage() {
       valid = false;
     }
 
-    if (!/^[689]\d{7}$/.test(phone.replace(/\D/g, ""))) {
-      setError("bk-phone", "Enter a valid Singapore mobile number (8 digits, starting with 6/8/9).");
+    const digits = phoneRaw.replace(/\D/g, "");
+    const firstDigit = digits[0] ?? "";
+    if (!(digits.length === 8 && ["6", "8", "9"].includes(firstDigit))) {
+      setError(
+        "bk-phone",
+        "Enter a valid Singapore mobile number (8 digits, starting with 6/8/9)."
+      );
       valid = false;
     }
 
-    if (!reason) {
+    if (!reason || reason.length < 4) {
       setError("bk-reason", "Tell us briefly why you are visiting.");
       valid = false;
     }
@@ -110,10 +119,43 @@ export default function BookingPage() {
 
     if (!valid) return;
 
-    form.reset();
-    showToast(
-      "Thank you. We’ve recorded your request. Our team will contact you shortly to confirm your appointment."
+    const contactPrefInput = form.querySelector<HTMLInputElement>(
+      'input[name="bk-contact"]:checked'
     );
+    const contactPreference =
+      (contactPrefInput?.value as "whatsapp" | "call" | "either" | undefined) ?? "whatsapp";
+
+    const idempotencyKey =
+      (window.crypto && "randomUUID" in window.crypto
+        ? window.crypto.randomUUID()
+        : `booking-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+
+    try {
+      setSubmitting(true);
+      const result = await requestBooking.mutateAsync({
+        name,
+        phone: phoneRaw,
+        reason,
+        preferredTime: when,
+        contactPreference,
+        idempotencyKey,
+      });
+
+      form.reset();
+      showToast(
+        result?.message ??
+          "Thank you. We’ve received your request. Our team will contact you shortly to confirm your appointment."
+      );
+    } catch (error) {
+      // Surface a friendly message; avoid leaking implementation details
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "We could not submit your request. Please try again or call the clinic.";
+      showToast(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -276,12 +318,14 @@ export default function BookingPage() {
 
             <Button
               type="submit"
+              disabled={submitting}
               className={cn(
                 "mt-2 w-full h-9 rounded-full text-[10px]",
-                "bg-[#ff6b6b] hover:bg-[#e05555] shadow-md"
+                "bg-[#ff6b6b] hover:bg-[#e05555] shadow-md",
+                submitting && "opacity-80 cursor-wait"
               )}
             >
-              Submit Booking Request
+              {submitting ? "Submitting..." : "Submit Booking Request"}
             </Button>
 
             <p className="text-[8px] text-slate-500 mt-1">
