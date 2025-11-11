@@ -91,21 +91,27 @@ export const telemedicineRouter = router({
           });
 
         if (insertError) {
-          console.error(
-            "Failed to persist telemedicine session:",
-            insertError,
-          );
+          // PDPA: do not log full payloads or PHI. This log is limited to technical details.
+          console.error("Failed to persist telemedicine session", {
+            appointmentId: input.appointmentId,
+            message: insertError.message,
+            code: insertError.code,
+          });
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message:
               "Video session created but could not be saved. Please try again.",
           });
         }
-
+ 
         return { roomUrl: room.url };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
-        console.error("Telemedicine session creation failed:", message);
+        // PDPA: never log PHI or full session context; this message is technical-only.
+        console.error("Telemedicine session creation failed", {
+          appointmentId: input.appointmentId,
+          message,
+        });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Could not create or retrieve the video session.",
