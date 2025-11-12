@@ -25,15 +25,15 @@ function AdminDashboardPage() {
         />
         <MetricCard
           title="Appointments Today"
-          value={data?.appointmentsToday ?? 0}
+          value={data?.totalAppointmentsToday ?? 0}
           icon={Calendar}
           change="-0.5%"
         />
         <MetricCard
           title="Revenue (This Month)"
-          value={`$${(data?.monthlyRevenue ?? 0).toLocaleString()}`}
+          value="$0"
           icon={DollarSign}
-          change="+12.4%"
+          change="+0.0%"
         />
       </div>
       <div className="mt-8">

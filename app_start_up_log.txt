@@ -1,4 +1,4 @@
-$ rm -rf .next
+$ rm -rf .next/
 pete@pop-os:/home/project/Gabriel-Family-Clinic-v2
 $ npm run build
 
@@ -19,16 +19,18 @@ $ npm run build
  ✓ Compiled successfully
  ✓ Linting and checking validity of types    
  ✓ Collecting page data    
- ✓ Generating static pages (26/26)
+ ✓ Generating static pages (28/28)
  ✓ Collecting build traces    
  ✓ Finalizing page optimization    
 
 Route (app)                                               Size     First Load JS
 ┌ ○ /                                                     7 kB            102 kB
 ├ ○ /_not-found                                           873 B          88.3 kB
+├ ○ /admin/bookings                                       3.02 kB         129 kB
 ├ ƒ /api/auth/[...nextauth]                               0 B                0 B
 ├ ƒ /api/trpc/[trpc]                                      0 B                0 B
-└ ○ /booking                                              4.25 kB         130 kB
+├ ○ /booking                                              4.29 kB         130 kB
+└ ○ /portal/appointments/book                             3.19 kB         129 kB
 + First Load JS shared by all                             87.4 kB
   ├ chunks/117-8720ea6286060636.js                        31.7 kB
   ├ chunks/fd9d1056-c0b6c6cf32ef7794.js                   53.6 kB
@@ -38,10 +40,10 @@ Route (pages)                                             Size     First Load JS
 ┌   /_app                                                 0 B             202 kB
 ├ ○ /admin/analytics                                      3.27 kB         207 kB
 ├ ○ /admin/communications/broadcast                       1.69 kB         206 kB
-├ ○ /admin/dashboard                                      2.62 kB         207 kB
+├ ○ /admin/dashboard                                      2.58 kB         206 kB
 ├ ○ /admin/login                                          310 B           202 kB
 ├ ○ /admin/reports/appointments                           1.67 kB         206 kB
-├ ○ /admin/users                                          2.35 kB         206 kB
+├ ○ /admin/users                                          2.28 kB         206 kB
 ├ ƒ /api/cron/process-jobs                                0 B             202 kB
 ├ ƒ /api/health                                           0 B             202 kB
 ├ ƒ /api/trpc/[...trpc]                                   0 B             202 kB
@@ -63,9 +65,9 @@ Route (pages)                                             Size     First Load JS
 └ ○ /register                                             33.5 kB         250 kB
 + First Load JS shared by all                             236 kB
   ├ chunks/framework-ee1ebeba1a79078a.js                  44.8 kB
-  ├ chunks/main-1e031fa8943bce98.js                       36.3 kB
-  ├ chunks/pages/_app-5785b7169dd44575.js                 119 kB
-  ├ css/2d739f18153f0c8d.css                              34 kB
+  ├ chunks/main-4fd70de00d246fc4.js                       36.3 kB
+  ├ chunks/pages/_app-c6fcf74ad47aff74.js                 119 kB
+  ├ css/9835e7d413d7efdf.css                              34.3 kB
   └ other shared chunks (total)                           1.81 kB
 
 ○  (Static)   prerendered as static content
@@ -82,4 +84,5 @@ $ npm run start
 
  ✓ Starting...
  ⚠ The static directory has been deprecated in favor of the public directory. https://nextjs.org/docs/messages/static-dir-deprecated
- ✓ Ready in 1823ms
+ ✓ Ready in 1821ms
+

@@ -11,14 +11,10 @@ export function UserTable() {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState("");
 
-  const { data, isLoading, error } = api.admin.getUsers.useQuery({
-    page,
-    filter,
-  });
+  const { data, isLoading, error } = api.admin.getUsers.useQuery();
 
-  const users = data?.users ?? [];
-  const total = data?.total ?? 0;
-  const pageCount = Math.ceil(total / 10);
+  const usersCount = Array.isArray(data) ? data.length : 0;
+  const pageCount = 1;
 
   // TanStack Table setup (useTable, getHeaderGroups, etc.) would go here
 
@@ -40,7 +36,7 @@ export function UserTable() {
       {/* Table rendering would go here */}
       <div className="border rounded-lg">
         <p className="p-4"> (Placeholder for TanStack React Table)</p>
-        <p className="p-4"> {users.length} users found.</p>
+        <p className="p-4"> {usersCount} users found.</p>
       </div>
 
       {/* Pagination Controls */}
