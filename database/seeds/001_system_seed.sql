@@ -14,14 +14,16 @@ SET search_path TO clinic, public;
 -- ============================================================================
 
 INSERT INTO feature_flags (name, description, is_enabled, rollout_percentage) VALUES
-    ('telemedicine', 'Enables video consultations for patients and doctors.', true),
-    ('online_payments', 'Enables online payment processing via Stripe.', true),
-    ('whatsapp_notifications', 'Enables sending appointment reminders via WhatsApp.', true),
-    ('e_prescriptions', 'Enables generating and sending electronic prescriptions.', true),
-    ('ai_diagnosis_suggestions', 'Provides AI-powered diagnosis suggestions to doctors during consultation.', false),
-    ('patient_document_upload', 'Allows patients to upload their own documents (e.g., old lab results).', false)
+    ('telemedicine', 'Enables video consultations for patients and doctors.', true, 100),
+    ('online_payments', 'Enables online payment processing via Stripe.', true, 100),
+    ('whatsapp_notifications', 'Enables sending appointment reminders via WhatsApp.', true, 100),
+    ('e_prescriptions', 'Enables generating and sending electronic prescriptions.', true, 100),
+    ('ai_diagnosis_suggestions', 'Provides AI-powered diagnosis suggestions to doctors during consultation.', false, 100),
+    ('patient_document_upload', 'Allows patients to upload their own documents (e.g., old lab results).', false, 100)
 ON CONFLICT (name) DO UPDATE SET
-    description = EXCLUDED.description;
+    description = EXCLUDED.description,
+    is_enabled = EXCLUDED.is_enabled,
+    rollout_percentage = EXCLUDED.rollout_percentage;
 
 
 -- ============================================================================

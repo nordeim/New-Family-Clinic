@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
     email CITEXT NOT NULL,
     phone VARCHAR(20),
     password_hash VARCHAR(255),
+    -- Denormalized full name for search, indexing, and views
     full_name VARCHAR(255) NOT NULL,
     display_name VARCHAR(100),
     role user_role NOT NULL DEFAULT 'patient',

@@ -26,9 +26,9 @@ npm run db:run-seeds
 
 ```bash
 export DATABASE_URL="postgres://postgres:local_dev_password_change_me@localhost:54322/postgres" && \
-echo "Using clean DATABASE_URL=$DATABASE_URL" && \
-echo "Running migrations on clean, healthy DB..." && \
-npm run db:run-migrations
+echo "Using DATABASE_URL=$DATABASE_URL" && \
+echo "Re-running seeds after final 001_system_seed.sql fix..." && \
+npm run db:run-seeds
 ```
 
 ---
@@ -115,3 +115,14 @@ END;
 $block$;
 SQL
 ```
+
+---
+
+```bash
+export DATABASE_URL="postgres://postgres:local_dev_password_change_me@localhost:54322/postgres" && \
+echo "Using DATABASE_URL=$DATABASE_URL" && \
+echo "Quick inline psql sanity check for 001_system_seed.sql..." && \
+psql "$DATABASE_URL" -c "SET search_path TO clinic, public; INSERT INTO feature_flags (name, description, is_enabled, rollout_percentage) VALUES ('__seed_probe__', 'probe row', false, 100) ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;" && \
+psql "$DATABASE_URL" -c "DELETE FROM feature_flags WHERE name = '__seed_probe__';"
+```
+

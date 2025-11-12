@@ -17,7 +17,7 @@ SET search_path TO clinic, public;
 -- Core Tables
 CREATE INDEX IF NOT EXISTS idx_users_clinic_role ON users(clinic_id, role);
 CREATE INDEX IF NOT EXISTS idx_patients_clinic_search ON patients(clinic_id, nric_hash);
-CREATE INDEX IF NOT EXISTS idx_patients_name_trgm ON patients USING gin (full_name gin_trgm_ops); -- For fuzzy name search
+-- CREATE INDEX IF NOT EXISTS idx_patients_name_trgm ON patients USING gin (full_name gin_trgm_ops);\n-- Temporarily disabled: depends on full_name existing on patients. Re-enable once patients.full_name is introduced via a dedicated migration. -- For fuzzy name search
 CREATE INDEX IF NOT EXISTS idx_doctors_clinic ON doctors(clinic_id);
 
 -- Scheduling Tables
@@ -62,6 +62,9 @@ CREATE INDEX IF NOT EXISTS idx_webhook_logs_webhook ON webhook_logs(webhook_id);
 -- API for the application layer, even if underlying tables change.
 
 -- View for upcoming appointments, joining relevant tables for easy display.
+-- Assumes:
+-- - patients.user_id references clinic.users.id
+-- - users.full_name is present (added in 003_core_identity_tables)
 CREATE OR REPLACE VIEW clinic.view_upcoming_appointments AS
 SELECT
     a.id AS appointment_id,
@@ -70,9 +73,9 @@ SELECT
     a.status,
     a.appointment_type,
     p.id AS patient_id,
-    p_user.full_name AS patient_name,
+    COALESCE(p_user.full_name, p_user.display_name) AS patient_name,
     d.id AS doctor_id,
-    d_user.full_name AS doctor_name,
+    COALESCE(d_user.full_name, d_user.display_name) AS doctor_name,
     c.id AS clinic_id,
     c.name AS clinic_name,
     c.branch_name AS clinic_branch
@@ -80,7 +83,7 @@ FROM
     clinic.appointments a
 JOIN
     clinic.patients p ON a.patient_id = p.id
-JOIN
+LEFT JOIN
     clinic.users p_user ON p.user_id = p_user.id
 JOIN
     clinic.doctors d ON a.doctor_id = d.id
