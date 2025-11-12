@@ -108,12 +108,39 @@ CREATE TABLE IF NOT EXISTS email_messages (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
--- Apply the `updated_at` trigger
-CREATE TRIGGER update_notifications_updated_at BEFORE UPDATE ON notifications
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_sms_messages_updated_at BEFORE UPDATE ON sms_messages
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_whatsapp_messages_updated_at BEFORE UPDATE ON whatsapp_messages
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_email_messages_updated_at BEFORE UPDATE ON email_messages
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+-- Apply the `updated_at` trigger (idempotent for each table)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_notifications_updated_at'
+    ) THEN
+        CREATE TRIGGER update_notifications_updated_at
+            BEFORE UPDATE ON notifications
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_sms_messages_updated_at'
+    ) THEN
+        CREATE TRIGGER update_sms_messages_updated_at
+            BEFORE UPDATE ON sms_messages
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_whatsapp_messages_updated_at'
+    ) THEN
+        CREATE TRIGGER update_whatsapp_messages_updated_at
+            BEFORE UPDATE ON whatsapp_messages
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_email_messages_updated_at'
+    ) THEN
+        CREATE TRIGGER update_email_messages_updated_at
+            BEFORE UPDATE ON email_messages
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+END;
+$$;

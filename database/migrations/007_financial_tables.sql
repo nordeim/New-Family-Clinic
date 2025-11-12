@@ -83,8 +83,23 @@ CREATE TABLE IF NOT EXISTS insurance_claims (
     deleted_at TIMESTAMPTZ
 );
 
--- Apply the `updated_at` trigger
-CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_insurance_claims_updated_at BEFORE UPDATE ON insurance_claims
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+-- Apply the `updated_at` trigger (idempotent for each table)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_payments_updated_at'
+    ) THEN
+        CREATE TRIGGER update_payments_updated_at
+            BEFORE UPDATE ON payments
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_insurance_claims_updated_at'
+    ) THEN
+        CREATE TRIGGER update_insurance_claims_updated_at
+            BEFORE UPDATE ON insurance_claims
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+END;
+$$;

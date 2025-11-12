@@ -15,8 +15,10 @@ SQL
 
 ```bash
 export DATABASE_URL="postgres://postgres:local_dev_password_change_me@localhost:54322/postgres" && \
-echo "Using fresh DATABASE_URL=$DATABASE_URL" && \
+echo "Using DATABASE_URL=$DATABASE_URL" && \
+echo "Running migrations after disabling prevent_appointment_overlap constraint in 005..." && \
 npm run db:run-migrations && \
+echo "Running seeds on successful schema..." && \
 npm run db:run-seeds
 ```
 

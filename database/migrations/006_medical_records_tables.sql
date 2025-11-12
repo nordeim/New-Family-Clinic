@@ -193,16 +193,55 @@ CREATE TABLE IF NOT EXISTS vaccination_records (
     deleted_at TIMESTAMPTZ
 );
 
--- Apply the `updated_at` trigger
-CREATE TRIGGER update_medical_records_updated_at BEFORE UPDATE ON medical_records
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_prescriptions_updated_at BEFORE UPDATE ON prescriptions
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_prescription_items_updated_at BEFORE UPDATE ON prescription_items
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_lab_results_updated_at BEFORE UPDATE ON lab_results
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_imaging_results_updated_at BEFORE UPDATE ON imaging_results
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_vaccination_records_updated_at BEFORE UPDATE ON vaccination_records
-    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+-- Apply the `updated_at` trigger (idempotent for each table)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_medical_records_updated_at'
+    ) THEN
+        CREATE TRIGGER update_medical_records_updated_at
+            BEFORE UPDATE ON medical_records
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_prescriptions_updated_at'
+    ) THEN
+        CREATE TRIGGER update_prescriptions_updated_at
+            BEFORE UPDATE ON prescriptions
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_prescription_items_updated_at'
+    ) THEN
+        CREATE TRIGGER update_prescription_items_updated_at
+            BEFORE UPDATE ON prescription_items
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_lab_results_updated_at'
+    ) THEN
+        CREATE TRIGGER update_lab_results_updated_at
+            BEFORE UPDATE ON lab_results
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_imaging_results_updated_at'
+    ) THEN
+        CREATE TRIGGER update_imaging_results_updated_at
+            BEFORE UPDATE ON imaging_results
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_vaccination_records_updated_at'
+    ) THEN
+        CREATE TRIGGER update_vaccination_records_updated_at
+            BEFORE UPDATE ON vaccination_records
+            FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+END;
+$$;

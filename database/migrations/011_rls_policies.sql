@@ -55,8 +55,8 @@ $$ LANGUAGE plpgsql;
 -- ---------------------------------
 ALTER TABLE clinics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clinics FORCE ROW LEVEL SECURITY;
-CALL create_policy_if_not_exists('clinics', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
-CALL create_policy_if_not_exists('clinics', 'staff_clinic_access', 'SELECT', 'id = current_setting(''app.current_clinic_id'', true)::UUID');
+SELECT create_policy_if_not_exists('clinics', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
+SELECT create_policy_if_not_exists('clinics', 'staff_clinic_access', 'SELECT', 'id = current_setting(''app.current_clinic_id'', true)::UUID');
 
 
 -- ---------------------------------
@@ -64,10 +64,10 @@ CALL create_policy_if_not_exists('clinics', 'staff_clinic_access', 'SELECT', 'id
 -- ---------------------------------
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users FORCE ROW LEVEL SECURITY;
-CALL create_policy_if_not_exists('users', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
-CALL create_policy_if_not_exists('users', 'staff_can_manage_clinic_users', 'ALL', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID');
-CALL create_policy_if_not_exists('users', 'user_can_view_own_profile', 'SELECT', 'id = current_setting(''app.current_user_id'', true)::UUID');
-CALL create_policy_if_not_exists('users', 'user_can_update_own_profile', 'UPDATE', 'id = current_setting(''app.current_user_id'', true)::UUID', 'id = current_setting(''app.current_user_id'', true)::UUID');
+SELECT create_policy_if_not_exists('users', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
+SELECT create_policy_if_not_exists('users', 'staff_can_manage_clinic_users', 'ALL', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID');
+SELECT create_policy_if_not_exists('users', 'user_can_view_own_profile', 'SELECT', 'id = current_setting(''app.current_user_id'', true)::UUID');
+SELECT create_policy_if_not_exists('users', 'user_can_update_own_profile', 'UPDATE', 'id = current_setting(''app.current_user_id'', true)::UUID', 'id = current_setting(''app.current_user_id'', true)::UUID');
 
 
 -- ---------------------------------
@@ -75,9 +75,9 @@ CALL create_policy_if_not_exists('users', 'user_can_update_own_profile', 'UPDATE
 -- ---------------------------------
 ALTER TABLE patients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE patients FORCE ROW LEVEL SECURITY;
-CALL create_policy_if_not_exists('patients', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
-CALL create_policy_if_not_exists('patients', 'staff_can_manage_clinic_patients', 'ALL', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID');
-CALL create_policy_if_not_exists('patients', 'patient_can_view_own_record', 'SELECT', 'user_id = current_setting(''app.current_user_id'', true)::UUID');
+SELECT create_policy_if_not_exists('patients', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
+SELECT create_policy_if_not_exists('patients', 'staff_can_manage_clinic_patients', 'ALL', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID');
+SELECT create_policy_if_not_exists('patients', 'patient_can_view_own_record', 'SELECT', 'user_id = current_setting(''app.current_user_id'', true)::UUID');
 
 
 -- ---------------------------------
@@ -85,10 +85,10 @@ CALL create_policy_if_not_exists('patients', 'patient_can_view_own_record', 'SEL
 -- ---------------------------------
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE appointments FORCE ROW LEVEL SECURITY;
-CALL create_policy_if_not_exists('appointments', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
-CALL create_policy_if_not_exists('appointments', 'staff_can_manage_clinic_appointments', 'ALL', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID');
-CALL create_policy_if_not_exists('appointments', 'patient_can_view_own_appointments', 'SELECT', 'patient_id IN (SELECT id FROM patients WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
-CALL create_policy_if_not_exists('appointments', 'doctor_can_view_own_appointments', 'SELECT', 'doctor_id IN (SELECT id FROM doctors WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
+SELECT create_policy_if_not_exists('appointments', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
+SELECT create_policy_if_not_exists('appointments', 'staff_can_manage_clinic_appointments', 'ALL', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID');
+SELECT create_policy_if_not_exists('appointments', 'patient_can_view_own_appointments', 'SELECT', 'patient_id IN (SELECT id FROM patients WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
+SELECT create_policy_if_not_exists('appointments', 'doctor_can_view_own_appointments', 'SELECT', 'doctor_id IN (SELECT id FROM doctors WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
 
 
 -- ---------------------------------
@@ -96,10 +96,10 @@ CALL create_policy_if_not_exists('appointments', 'doctor_can_view_own_appointmen
 -- ---------------------------------
 ALTER TABLE medical_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE medical_records FORCE ROW LEVEL SECURITY;
-CALL create_policy_if_not_exists('medical_records', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
-CALL create_policy_if_not_exists('medical_records', 'clinic_staff_restricted_access', 'SELECT', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID AND get_my_role() IN (''clinic_admin'', ''clinic_staff'')');
-CALL create_policy_if_not_exists('medical_records', 'patient_can_view_own_records', 'SELECT', 'patient_id IN (SELECT id FROM patients WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
-CALL create_policy_if_not_exists('medical_records', 'treating_doctor_can_manage_records', 'ALL', 'doctor_id IN (SELECT id FROM doctors WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)', 'doctor_id IN (SELECT id FROM doctors WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
+SELECT create_policy_if_not_exists('medical_records', 'admin_all_access', 'ALL', 'get_my_role() = ''superadmin''', 'get_my_role() = ''superadmin''');
+SELECT create_policy_if_not_exists('medical_records', 'clinic_staff_restricted_access', 'SELECT', 'clinic_id = current_setting(''app.current_clinic_id'', true)::UUID AND get_my_role() IN (''clinic_admin'', ''clinic_staff'')');
+SELECT create_policy_if_not_exists('medical_records', 'patient_can_view_own_records', 'SELECT', 'patient_id IN (SELECT id FROM patients WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
+SELECT create_policy_if_not_exists('medical_records', 'treating_doctor_can_manage_records', 'ALL', 'doctor_id IN (SELECT id FROM doctors WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)', 'doctor_id IN (SELECT id FROM doctors WHERE user_id = current_setting(''app.current_user_id'', true)::UUID)');
 
 -- Similar policies would be created for all other sensitive tables (doctors, staff, prescriptions, payments, etc.)
 -- This provides a representative sample of the policy structure.
