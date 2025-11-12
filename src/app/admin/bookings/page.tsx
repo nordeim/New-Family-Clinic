@@ -30,18 +30,13 @@ export default function AdminBookingLeadsPage() {
   const [limit, setLimit] = useState(50);
 
   // NOTE: admin router is mounted under appRouter as "admin" (ensure in server/api/root).
-  const leadsQuery = api.admin?.listPublicBookingRequests.useQuery(
-    {
-      status: statusFilter === "all" ? undefined : statusFilter,
-      limit,
-    },
-    {
-      keepPreviousData: true,
-    },
-  );
+  const leadsQuery = api.admin.listPublicBookingRequests.useQuery({
+    status: statusFilter === "all" ? undefined : statusFilter,
+    limit,
+  });
 
   const updateStatusMutation =
-    api.admin?.updatePublicBookingRequestStatus.useMutation();
+    api.admin.updatePublicBookingRequestStatus.useMutation();
 
   const refetch = () => {
     leadsQuery.refetch().catch(() => undefined);
@@ -195,7 +190,7 @@ export default function AdminBookingLeadsPage() {
                   {lead.status !== "contacted" && (
                     <Button
                       variant="outline"
-                      size="xs"
+                      size="sm"
                       className="h-6 text-[7px]"
                       onClick={() =>
                         handleStatusChange(lead.id, "contacted")
@@ -207,7 +202,7 @@ export default function AdminBookingLeadsPage() {
                   {lead.status !== "confirmed" && (
                     <Button
                       variant="outline"
-                      size="xs"
+                      size="sm"
                       className="h-6 text-[7px]"
                       onClick={() =>
                         handleStatusChange(lead.id, "confirmed")
@@ -219,7 +214,7 @@ export default function AdminBookingLeadsPage() {
                   {lead.status !== "cancelled" && (
                     <Button
                       variant="outline"
-                      size="xs"
+                      size="sm"
                       className="h-6 text-[7px] text-red-600 border-red-200"
                       onClick={() =>
                         handleStatusChange(lead.id, "cancelled")

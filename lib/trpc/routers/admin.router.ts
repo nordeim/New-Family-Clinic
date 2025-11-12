@@ -28,6 +28,30 @@ function getSupabaseFromContext(ctx: any) {
 
 export const adminRouter = createTRPCRouter({
   /**
+   * Stub: getUsers
+   *
+   * Provided to satisfy existing admin UI components (UserTable).
+   * Returns an empty list for now. Replace with real implementation later.
+   */
+  getUsers: adminProcedure.query(async () => {
+    return [];
+  }),
+
+  /**
+   * Stub: getDashboardMetrics
+   *
+   * Provided to satisfy existing admin dashboard components.
+   * Returns fixed zeroed metrics for now. Replace with real implementation later.
+   */
+  getDashboardMetrics: adminProcedure.query(async () => {
+    return {
+      totalPatients: 0,
+      totalAppointmentsToday: 0,
+      pendingLeads: 0,
+      completedAppointmentsThisWeek: 0,
+    };
+  }),
+  /**
    * List public booking requests (leads).
    *
    * Filters:
