@@ -51,7 +51,9 @@ export default function BookingPage() {
     return () => window.clearTimeout(handle);
   }, []);
 
-  const requestBooking = api.appointment.requestBooking.useMutation();
+  // Use the public booking request endpoint; this creates a safe, staff-reviewed
+  // booking request rather than a direct appointment.
+  const requestBooking = api.appointment.requestBookingPublic.useMutation();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
