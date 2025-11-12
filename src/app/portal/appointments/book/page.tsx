@@ -129,7 +129,7 @@ export default function PatientBookAppointmentPage() {
         </div>
 
         <p className="text-[10px] text-slate-600">
-          Choose an available slot below and tell us briefly why you're visiting. This flow
+          Choose an available slot below and tell us briefly why you&apos;re visiting. This flow
           creates a real appointment in the clinic system using the same engine that staff use,
           ensuring no double-bookings.
         </p>
