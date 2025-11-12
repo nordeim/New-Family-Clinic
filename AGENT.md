@@ -193,9 +193,49 @@ Notes:
 - Format: npm run format:write
 - Run dev server: npm run dev
 - Migrate DB: npm run db:run-migrations
-- Seed DB: npm run db:run-seeds
+- Seed DB:
+  - Standard: npm run db:run-seeds
+    - Applies `database/seeds/001_system_seed.sql` (system config, safe/idempotent).
+    - Designed to be safe in all environments.
+  - DEV/TEST-ONLY demo data:
+    - `database/seeds/002_dev_seed.sql` is for local/dev sample data only.
+    - MUST NOT be run in production.
+    - In environments with strict audit/partitioning on `audit.audit_logs`,
+      run it via a dev-only wrapper that:
+        - Temporarily disables triggers on `clinic.*` tables in that session,
+        - Executes `002_dev_seed.sql`,
+        - Re-enables those triggers.
 - Run unit tests: npm test
 - Run e2e tests: npm run test:e2e
+
+---
+
+## 13) Database & seeds guardrails (for AI agents & contributors)
+
+When working with database schema and seeds:
+
+- Migrations
+  - All authoritative DDL is in `database/migrations/`.
+  - Do not edit existing migration files; add new ones.
+  - Do not weaken audit/partition constraints just to make seeds pass.
+- Seeds
+  - `001_system_seed.sql`:
+    - System-level settings/flags.
+    - Must be schema-aligned, idempotent, and safe across environments.
+  - `002_dev_seed.sql`:
+    - DEV/TEST ONLY demo data; enforced by environment guard.
+    - Uses fixed timestamps; audit coverage for these rows is relaxed by design.
+    - In audit-partitioned setups:
+      - Run via an explicit dev-only script that disables/enables audit triggers
+        (or all triggers) on `clinic.*` tables around the seed execution.
+- Do
+  - Keep seeds aligned with the current schema; use `ON CONFLICT` for idempotency.
+  - Document any dev-only trigger/partition workarounds directly next to usage.
+  - Ensure `npm run db:run-migrations` and `npm run db:run-seeds` remain green.
+- Do NOT
+  - Run `002_dev_seed.sql` in production or production-like CI.
+  - Hide audit trigger disables in shared libraries or production runtime code.
+  - Modify historical migrations as a shortcut for fixing seed issues.
 
 ---
 

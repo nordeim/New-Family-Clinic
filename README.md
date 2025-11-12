@@ -137,12 +137,64 @@ This project uses a strict environment variable validation system (`src/env.js`)
 Apply the database schema and add development sample data to your Supabase project.
 
 ```bash
-# Apply all schema changes
+# Apply all schema changes (required)
 npm run db:run-migrations
 
-# (Optional but Recommended) Add sample clinics, doctors, and patients
+# Apply system-level seed data (safe for all environments)
+# This uses database/seeds/001_system_seed.sql
 npm run db:run-seeds
 ```
+
+#### Database & Seeds — Important Notes
+
+- Migrations
+  - All authoritative schema changes live in `database/migrations/`.
+  - Do not edit historical migration files; always add new ones.
+- Seeds
+  - `001_system_seed.sql`
+    - Purpose: system flags, settings, other non-tenant, non-PHI bootstrap data.
+    - Safe for all environments; designed to be idempotent via `ON CONFLICT`.
+  - `002_dev_seed.sql`
+    - Purpose: DEV/TEST-ONLY sample clinic, users, appointments, etc.
+    - Guarded by environment checks; MUST NOT be executed in production.
+    - May rely on a fixed historical timestamp for deterministic behavior.
+    - In environments with strict audit/partitioning (e.g. `audit.audit_logs`),
+      run via a dev-only wrapper that temporarily disables audit triggers for
+      the duration of the seed, then re-enables them.
+- Recommended local dev flow for full demo data
+  - 1) Run migrations: `npm run db:run-migrations`
+  - 2) Run system seed: `npm run db:run-seeds`
+  - 3) (Optional, DEV ONLY) Load demo data with controlled wrapper:
+
+    ```bash
+    export DATABASE_URL="postgres://..."
+    psql "$DATABASE_URL" -v ON_ERROR_STOP=1 << 'EOF'
+    SET search_path TO clinic, public;
+
+    -- DEV/TEST ONLY: disable audit triggers on clinic.* tables
+    ALTER TABLE clinic.clinics         DISABLE TRIGGER ALL;
+    ALTER TABLE clinic.users           DISABLE TRIGGER ALL;
+    ALTER TABLE clinic.doctors         DISABLE TRIGGER ALL;
+    ALTER TABLE clinic.patients        DISABLE TRIGGER ALL;
+    ALTER TABLE clinic.appointments    DISABLE TRIGGER ALL;
+    ALTER TABLE clinic.medical_records DISABLE TRIGGER ALL;
+    ALTER TABLE clinic.payments        DISABLE TRIGGER ALL;
+
+    \i database/seeds/002_dev_seed.sql
+
+    -- Re-enable triggers
+    ALTER TABLE clinic.clinics         ENABLE TRIGGER ALL;
+    ALTER TABLE clinic.users           ENABLE TRIGGER ALL;
+    ALTER TABLE clinic.doctors         ENABLE TRIGGER ALL;
+    ALTER TABLE clinic.patients        ENABLE TRIGGER ALL;
+    ALTER TABLE clinic.appointments    ENABLE TRIGGER ALL;
+    ALTER TABLE clinic.medical_records ENABLE TRIGGER ALL;
+    ALTER TABLE clinic.payments        ENABLE TRIGGER ALL;
+    EOF
+    ```
+
+  - This pattern keeps production migrations and audit behavior intact while
+    allowing rich demo data in local/dev environments.
 
 ### 5. Start the Development Server
 
